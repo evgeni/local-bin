@@ -2,6 +2,8 @@
 
 SCREEN = "LVDS1"
 WACOM_DEVICES = ["Serial Wacom Tablet eraser", "Serial Wacom Tablet stylus"]
+NORMAL="normal"
+TABLET="right"
 
 xrandr_rotations = ["normal", "left", "inverted", "right"]
 xsetwacom_rotations = ["NONE", "CW", "HALF", "CCW"]
@@ -32,11 +34,22 @@ def set_xrandr_rotation(screen, rotation):
 def set_xsetwacom_rotation(device, rotation):
     call(["xsetwacom", "set", device, "rotate", rotation])
 
+def set_rotation(rotation):
+    set_xrandr_rotation(SCREEN, xrandr_rotations[rotation])
+    for device in WACOM_DEVICES:
+        set_xsetwacom_rotation(device, xsetwacom_rotations[rotation])
+
 def set_next_rotation():
     current_rotation = get_current_rotation(SCREEN)
     next_rotation = get_next_rotation(current_rotation)
-    set_xrandr_rotation(SCREEN, xrandr_rotations[next_rotation])
-    for device in WACOM_DEVICES:
-        set_xsetwacom_rotation(device, xsetwacom_rotations[next_rotation])
+    set_rotation(next_rotation)
+
+def set_normal_rotation():
+    normal = xrandr_rotations.index(NORMAL)
+    set_rotation(normal)
+
+def set_tablet_rotation():
+    tablet = xrandr_rotations.index(TABLET)
+    set_rotation(tablet)
 
 set_next_rotation()
