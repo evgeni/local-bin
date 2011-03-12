@@ -1,0 +1,42 @@
+#!/usr/bin/python
+
+SCREEN = "LVDS1"
+WACOM_DEVICES = ["Serial Wacom Tablet eraser", "Serial Wacom Tablet stylus"]
+
+xrandr_rotations = ["normal", "left", "inverted", "right"]
+xsetwacom_rotations = ["NONE", "CW", "HALF", "CCW"]
+
+from subprocess import call
+try:
+    from subprocess import check_output
+except:
+    from subprocess import Popen, PIPE
+    def check_output(*popenargs, **kwargs):
+        return Popen(*popenargs, stdout=PIPE).communicate()[0]
+
+def get_current_rotation(screen):
+    rotation = "normal"
+    xrandr_output = check_output(["xrandr", "-q"])
+    for line in xrandr_output.splitlines():
+        if line.startswith(screen):
+            if not line.split()[3].startswith("("):
+                rotation = line.split()[3]
+    return rotation
+
+def get_next_rotation(rotation):
+    return (xrandr_rotations.index(rotation)+1)%len(xrandr_rotations)
+
+def set_xrandr_rotation(screen, rotation):
+    call(["xrandr", "--output", screen, "--rotate", rotation])
+
+def set_xsetwacom_rotation(device, rotation):
+    call(["xsetwacom", "set", device, "rotate", rotation])
+
+def set_next_rotation():
+    current_rotation = get_current_rotation(SCREEN)
+    next_rotation = get_next_rotation(current_rotation)
+    set_xrandr_rotation(SCREEN, xrandr_rotations[next_rotation])
+    for device in WACOM_DEVICES:
+        set_xsetwacom_rotation(device, xsetwacom_rotations[next_rotation])
+
+set_next_rotation()
