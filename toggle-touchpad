@@ -1,0 +1,9 @@
+#!/bin/sh
+
+STATE=`xinput list-props "SynPS/2 Synaptics TouchPad" |grep "Synaptics Off" |awk '{print $4}'`
+
+if [ $STATE -eq 0 ]; then
+	xinput set-prop "SynPS/2 Synaptics TouchPad" "Synaptics Off" 1
+else
+	xinput set-prop "SynPS/2 Synaptics TouchPad" "Synaptics Off" 0
+fi
