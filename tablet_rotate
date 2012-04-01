@@ -6,7 +6,7 @@ NORMAL="normal"
 TABLET="right"
 
 xrandr_rotations = ["normal", "left", "inverted", "right"]
-xsetwacom_rotations = ["NONE", "CW", "HALF", "CCW"]
+xsetwacom_rotations = ["NONE", "CCW", "HALF", "CW"]
 
 from subprocess import call
 try:
