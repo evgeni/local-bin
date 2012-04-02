@@ -39,10 +39,33 @@ def set_rotation(rotation):
     for device in WACOM_DEVICES:
         set_xsetwacom_rotation(device, xsetwacom_rotations[rotation])
 
+def set_arrow_rotation(rotation):
+	if rotation==0:
+		call(["xmodmap", "-e", "keycode 113 = Left"])
+		call(["xmodmap", "-e", "keycode 111 = Up"])
+		call(["xmodmap", "-e", "keycode 114 = Right"])
+		call(["xmodmap", "-e", "keycode 116 = Down"])
+	elif rotation == 1:
+		call(["xmodmap", "-e", "keycode 113 = Up"])
+		call(["xmodmap", "-e", "keycode 111 = Right"])
+		call(["xmodmap", "-e", "keycode 114 = Down"])
+		call(["xmodmap", "-e", "keycode 116 = Left"])
+	elif rotation == 2:
+		call(["xmodmap", "-e", "keycode 113 = Right"])
+		call(["xmodmap", "-e", "keycode 111 = Down"])
+		call(["xmodmap", "-e", "keycode 114 = Left"])
+		call(["xmodmap", "-e", "keycode 116 = Up"])
+	elif rotation == 3:
+		call(["xmodmap", "-e", "keycode 113 = Down"])
+		call(["xmodmap", "-e", "keycode 111 = Left"])
+		call(["xmodmap", "-e", "keycode 114 = Up"])
+		call(["xmodmap", "-e", "keycode 116 = Right"])
+		
 def set_next_rotation():
     current_rotation = get_current_rotation(SCREEN)
     next_rotation = get_next_rotation(current_rotation)
     set_rotation(next_rotation)
+    set_arrow_rotation(next_rotation)
 
 def set_normal_rotation():
     normal = xrandr_rotations.index(NORMAL)
