@@ -7,6 +7,7 @@ TABLET="right"
 
 xrandr_rotations = ["normal", "left", "inverted", "right"]
 xsetwacom_rotations = ["NONE", "CCW", "HALF", "CW"]
+xmodmap_rotations = ["Left", "Up", "Right", "Down"]
 
 from subprocess import call
 try:
@@ -40,26 +41,12 @@ def set_rotation(rotation):
         set_xsetwacom_rotation(device, xsetwacom_rotations[rotation])
 
 def set_arrow_rotation(rotation):
-	if rotation==0:
-		call(["xmodmap", "-e", "keycode 113 = Left"])
-		call(["xmodmap", "-e", "keycode 111 = Up"])
-		call(["xmodmap", "-e", "keycode 114 = Right"])
-		call(["xmodmap", "-e", "keycode 116 = Down"])
-	elif rotation == 1:
-		call(["xmodmap", "-e", "keycode 113 = Up"])
-		call(["xmodmap", "-e", "keycode 111 = Right"])
-		call(["xmodmap", "-e", "keycode 114 = Down"])
-		call(["xmodmap", "-e", "keycode 116 = Left"])
-	elif rotation == 2:
-		call(["xmodmap", "-e", "keycode 113 = Right"])
-		call(["xmodmap", "-e", "keycode 111 = Down"])
-		call(["xmodmap", "-e", "keycode 114 = Left"])
-		call(["xmodmap", "-e", "keycode 116 = Up"])
-	elif rotation == 3:
-		call(["xmodmap", "-e", "keycode 113 = Down"])
-		call(["xmodmap", "-e", "keycode 111 = Left"])
-		call(["xmodmap", "-e", "keycode 114 = Up"])
-		call(["xmodmap", "-e", "keycode 116 = Right"])
+    cmd = ["xmodmap"]
+    cmd += ["-e", "keycode 113 = %s"%xmodmap_rotations[(rotation+0)%len(xmodmap_rotations)]]
+    cmd += ["-e", "keycode 111 = %s"%xmodmap_rotations[(rotation+1)%len(xmodmap_rotations)]]
+    cmd += ["-e", "keycode 114 = %s"%xmodmap_rotations[(rotation+2)%len(xmodmap_rotations)]]
+    cmd += ["-e", "keycode 116 = %s"%xmodmap_rotations[(rotation+3)%len(xmodmap_rotations)]]
+    call(cmd)
 		
 def set_next_rotation():
     current_rotation = get_current_rotation(SCREEN)
