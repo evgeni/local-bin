@@ -1,3 +1,5 @@
 #!/bin/sh
 xrandr --output VGA1 --off
-xrandr --output LVDS1 --mode 1440x900
+xrandr --output HDMI2 --off
+xrandr --output HDMI3 --off
+xrandr --output LVDS1 --auto
