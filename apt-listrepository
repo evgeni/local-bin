@@ -1,0 +1,72 @@
+#!/usr/bin/perl
+
+# Copyright (C) 2004 Marcel Meckel <debian [at] thermoman [dot] de>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+# apt-listrepository 0.0.1
+# list packages with corresponding repository
+
+
+ sub usage {
+    print 'Usage: apt-listrepository
+
+Lists all installed packages and the corresponding
+repository it was installed from.
+
+  --help          - this usage message
+
+';
+ }
+
+ unless ($#ARGV ne 0) {
+    &usage();
+    exit 1;
+ }
+
+ # all installed packages
+ open(DATA, 'dpkg --get-selections|') or die "Can not execute dpkg\n";
+ @tmp = <DATA>;
+ close DATA;
+
+ chomp(@tmp);
+ $tmp2 = join("\n", @tmp)."\n";
+
+ $packages_nl = $tmp2;
+ $packages_nl =~ s/([^\s]+)\s+([^\n]+)/\1/g;
+ $packages    = $packages_nl;
+ $packages    =~ s/\n/ /g;
+
+ # get policy of all installed packages
+ open(DATA, "apt-cache policy $packages|") or die "Can not execute apt-cache\n";
+ @tmp = <DATA>;
+ close DATA;
+
+ chomp(@tmp);
+ $tmp2 = join("\n", @tmp)."\n";
+
+ $tmp2 =~ s/^  (Candidate|Installed|Version Table):.*\n//mg;
+ $tmp2 =~ s/([^:\s\n]+):\n[^\*]+\*\*\* ([^\s\n]+)[^\n]+\n\s+-?[0-9]+ ([^\n]+)\n(\s+[^\n]+\n)*/\1|\2|\3\n/g;
+
+ # all packages with version nr. and repository per line
+ @packages = split(/\n/, $tmp2);
+
+ foreach my $line (@packages) {
+    my ($name, $version, $repository) = split (/\|/, $line);
+    $repository =~ s/ Packages$//;
+    printf("%-35s %s\n", $name, $repository)
+ }
+
+exit 0;
